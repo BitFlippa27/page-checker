@@ -1,5 +1,5 @@
 const http = require('http');
-const { checkPageChanges } = require('./https.js');
+const { checkPageChanges } = require('./main.js');
 
 const server = http.createServer(async (req, res) => {
   if (req.url === '/check') {
