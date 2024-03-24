@@ -1,9 +1,11 @@
 const colors = require("colors");
 const Diff = require("diff");
 const cron = require("node-cron");
-const writeToSheet = require("./googleAuth.js");
-const pageDataDb = require("./pageData.mongo.js");
-const { pageData, websiteUrls } = require("./pageData.model.js");
+const writeToSheet = require("./googleApi.js");
+const websiteDataSchema = require("./models/websiteData.mongo.js");
+const { websiteData, getAllWebsites }  = require("./models/websiteData.model.js");
+const urls = require("./models/urls.js");
+ 
 
 
 const oldPageContent = `<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><link rel="manifest" href="/site.manifest"/><title>Bingo!</title><script defer="defer" src="/static/js/main.fcc1d6d8.js"></script><link href="/static/css/main.0953709d.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>`;
@@ -34,10 +36,10 @@ const retryCheckPageChanges = async (retryCount = 0) => {
   }
 };
 
-const checkPageChanges = async (url) => {
+const checkPageChanges = async (websiteDataObject) => {
   console.log("checkPageChanges");
   try {
-    const trackingData = await getTrackingData(url);
+    const trackingData = await getTrackingData(websiteDataObject);
 
     if (!trackingData) {
       return;
@@ -56,8 +58,10 @@ const checkPageChanges = async (url) => {
   }
 };
 
-const getTrackingData = async (url) => {
-  let { httpStatus, loadingTime, newContent, changeDate } = pageData;
+const getTrackingData = async (websiteDataDbObject) => {
+  let { url, webContent }  = websiteDataDbObject;
+  let { httpStatus, loadingTime, newContent, changeDate } = websiteData;
+
   try {
     const start = Date.now();
     const response = await fetchWebContent(url);
@@ -70,7 +74,7 @@ const getTrackingData = async (url) => {
     httpStatus = response.status;
     newContent = await response.text();
 
-    return { loadingTime, httpStatus, newContent, changeDate };
+    return { url, loadingTime, httpStatus, webContent, newContent, changeDate };
   } catch (error) {
     console.log(`Error in getTrackingData: ${error.message}`);
   }
@@ -90,7 +94,7 @@ const fetchWebContent = async (url) => {
       );
     } else if (!response) {
       console.log(
-        `Error in fetchWebContent: Web Site not reachable : ${error.message}`
+        `Error in fetchWebContent: Couldn't fetch web content: ${error.message}`
       );
     } else {
       console.error(
@@ -101,9 +105,9 @@ const fetchWebContent = async (url) => {
 };
 
 const printContentChanges = (trackingData) => {
-  const { httpStatus, loadingTime, newContent, changeDate } = trackingData;
+  const { url, httpStatus, loadingTime, webContent, newContent, changeDate } = trackingData;
 
-  const changes = Diff.diffWords(oldPageContent, newContent);
+  const changes = Diff.diffWords(webContent, newContent);
   let finalChanges = "";
   changes.forEach((part) => {
     // green for additions, red for deletions
@@ -121,15 +125,18 @@ const printContentChanges = (trackingData) => {
   process.stdout.write(`HTTP Status: ${httpStatus} \n`);
   process.stdout.write(`Loading Time: ${loadingTime}ms \n`);
   process.stdout.write(`Date of change: ${changeDate} \n`);
+  process.stdout.write(`Website: ${url} \n`);
+  
 
   saveToDb(trackingData);
 };
 
 const saveToDb = async (trackingData) => {
-  const { httpStatus, loadingTime, newContent, changeDate } = trackingData;
+  const { url, httpStatus, loadingTime, newContent, changeDate } = trackingData;
 
   try {
-    await pageDataDb.create({
+    await websiteDataSchema.create({
+      url: url,
       httpStatus: httpStatus,
       loadingTime: loadingTime,
       webContent: newContent,
@@ -141,10 +148,11 @@ const saveToDb = async (trackingData) => {
 };
 
 const timeScheduler = cron.schedule("*/10 * * * * *", async () => {
-  console.log("cronjob",websiteUrls);
-  for (const url of websiteUrls) {
+  console.log("Running cron job");
+  const websites = await getAllWebsites(); 
+  for (const websiteDataDbObject of websites) {
     try {
-      await checkPageChanges(url);
+      await checkPageChanges(websiteDataDbObject);
     } catch (error) {
       console.log(`Error in cron job: ${error.message}`);
       throw new Error("Error");
