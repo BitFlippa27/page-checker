@@ -1,5 +1,4 @@
 const { google } = require('googleapis');
-const fs = require('fs');
 const serviceAccount = require('./coherent-window-405214-47c7aa588fc3.json');
 
 
