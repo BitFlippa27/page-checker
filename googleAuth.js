@@ -24,6 +24,7 @@ const createJwtClient = () => {
 
 
 const writeToSheet = (newContent) => {
+  console.log("write to sheet");
   const sheets = createJwtClient();
   sheets.spreadsheets.values.update({
     spreadsheetId: '1yRgaCuDJ2zL7pGSru-3qimB43GIPk4T5BGuwk3Byuho',
@@ -43,7 +44,5 @@ const writeToSheet = (newContent) => {
   });
 }
 
-writeToSheet();
 
-
-exports.writeToSheet = writeToSheet;
+module.exports = writeToSheet;
