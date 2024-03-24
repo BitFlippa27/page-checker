@@ -1,13 +1,9 @@
 const http = require('http');
-const { checkPageChanges } = require('./main.js');
+const { cronJob } = require('./main.js');
 
 const server = http.createServer(async (req, res) => {
-  if (req.url === '/check') {
-    const changes = await checkPageChanges();
-    res.end(changes);
-  } else {
-    res.end('Server is running...');
-  }
+  res.end('Server is running...');
+  cronJob.start();
 });
 
 server.listen(7777, () => {
