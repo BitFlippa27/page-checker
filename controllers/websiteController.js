@@ -1,9 +1,8 @@
 const fetchWebContent = async (url) => {
-  let response;
-
   try {
     //response = new Response();
-    response = await fetch(url);
+    const response = await fetch(url);
+    
     return response;
   } catch (error) {
     if (response) {

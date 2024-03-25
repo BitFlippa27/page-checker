@@ -1,6 +1,7 @@
-import { websiteModel } from "../models/modelsExport";
+import { websiteModel } from "../models/modelsExport.js";
 
-const getAllWebsites = async () => { // to repo
+const getAllWebsites = async () => {
+  // to repo
   try {
     const urls = await websiteModel.find({});
     return urls;
@@ -9,15 +10,9 @@ const getAllWebsites = async () => { // to repo
   }
 };
 
-
 const saveWebsiteData = async (trackingData) => {
-  const {
-    url,
-    httpStatus,
-    loadingTime,
-    fetchedWebContent,
-    changeDate,
-  } = trackingData;
+  const { url, httpStatus, loadingTime, fetchedWebContent, changeDate } =
+    trackingData;
   try {
     await websiteModel.findOneAndUpdate(
       { url }, // find a document with `url`
@@ -34,7 +29,6 @@ const saveWebsiteData = async (trackingData) => {
   }
 };
 
-
 /*const addUrl = async (url) => {
   try {
     const newUrl = new websiteData({ url });
@@ -46,4 +40,4 @@ const saveWebsiteData = async (trackingData) => {
 }
 */
 
-export { getAllWebsites, saveWebsiteData}
+export { getAllWebsites, saveWebsiteData };

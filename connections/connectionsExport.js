@@ -1,3 +1,1 @@
-import { default as connectMongoDB } from "./mongoConnection";
-
-export { connectMongoDB }
+export { connectMongoDB } from "./mongoConnection.js";

@@ -1,16 +1,16 @@
 import http from "node:http";
-import main from "../main.js";
-import { config } from "../config/configExport.js";
-
-
+import main from "./main.js";
+//import { config } from "./config/configExport.js";
+import { connectMongoDB } from "./connections/connectionsExport.js";
+//process.env
 const startServer = async () => {
   try {
-    config.connectMongoDB();
+    connectMongoDB();
     const server = http.createServer(async (req, res) => {
       res.end("Server is running...");
     });
     server.listen(7777, () => {
-      console.log("Server is running on port 7777"); //process.env
+      console.log("Server is running on port 7777"); 
     });
     server.on("error", (error) => {
       console.error(`Error: ${error.message}`);

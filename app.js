@@ -1,7 +1,7 @@
 const colors = require("colors");
 const Diff = require("diff");
 const cron = require("node-cron");
-const writeToSheet = require("./services/sheetsApiService.js");
+const writeToSheet = require("./third-parties/sheetsApiService.js");
 const websiteDataSchema = require("./models/websiteData.mongo.js");
 const { websiteData, getAllWebsites }  = require("./models/websiteData.model.js");
 const urls = require("./models/urls.js");

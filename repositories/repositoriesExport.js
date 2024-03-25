@@ -1,3 +1,1 @@
-import { default as getAllWebsites, saveWebsiteData } from "./websiteRepository";
-
-export { getAllWebsites, saveWebsiteData }
+export { getAllWebsites, saveWebsiteData } from "./websiteRepository.js";

@@ -1,9 +1,9 @@
-import { fetchWebContent } from "../controllers/controllersExport";
-import { Diff } from "./thirdPartiesExport";
+import { fetchWebContent } from "../controllers/controllersExport.js";
+import { Diff } from "diff";
 
 const createTrackingData = async (websiteDataDbObject) => {
   const { url, webContent } = websiteDataDbObject;
-  
+
   try {
     const start = Date.now();
     const response = await fetchWebContent(url);
@@ -18,11 +18,10 @@ const createTrackingData = async (websiteDataDbObject) => {
       loadingTime,
       httpStatus: response.status,
       webContent: fetchedWebContent,
-      changeDate: new Date() - start
-    }
+      changeDate: new Date() - start,
+    };
 
     return websiteData;
-
   } catch (error) {
     console.error(`Error in getTrackingData: ${error.message}`);
   }
@@ -47,12 +46,11 @@ const checkPageChanges = async (trackingData) => {
   }
 };
 
-
 const getContentChanges = (trackingData) => {
   const { webContent, fetchedWebContent } = trackingData;
   const changes = Diff.diffWords(webContent, fetchedWebContent);
   let finalChanges = "";
-  
+
   changes.forEach((part) => {
     // green for additions, red for deletions
     let text = part.added
@@ -77,9 +75,9 @@ const printAllData = (trackingData, contentChanges) => {
   process.stdout.write(`Website: ${url} \n`);
 };
 
-export { 
-  createTrackingData, 
-  checkPageChanges, 
-  getContentChanges, 
-  printAllData 
-}
+export {
+  createTrackingData,
+  checkPageChanges,
+  getContentChanges,
+  printAllData,
+};

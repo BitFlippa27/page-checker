@@ -1,4 +1,5 @@
-import { MONGO_URL } from "../config/configExport";
+import { MONGO_URL } from "../config/configExport.js";
+import mongoose from "mongoose";
 
 const connectMongoDB = async () => {
   try {

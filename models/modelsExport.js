@@ -1,3 +1,1 @@
-import { default as WebSiteDataSchema } from "./websiteModel";
-
-export { WebSiteDataSchema }
+export { default as websiteModel } from "./websiteModel.js"; 

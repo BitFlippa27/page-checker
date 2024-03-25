@@ -1,28 +1,27 @@
-const cron = require("node-cron");
-const writeToSheet = require("./services/sheetsApiService.js");
-const { getAllWebsites } = require("./models/websiteModel.js");
+import cron from "node-cron";
+import  { writeToGoogleSheet }  from "./third-parties/sheetsApiService.js";
+import { getAllWebsites } from "./repositories/repositoriesExport.js";
 
-const { 
-  createTrackingData, 
-  checkPageChanges, 
-  getContentChanges, 
-  savesaveWebsiteDataToDb, 
-  printAllData
-} = require("./utils/utils.js");
+import {
+  createTrackingData,
+  checkPageChanges,
+  getContentChanges,
+  printAllData,
+} from "./services/servicesExport.js";
 
 const main = async () => {
-  const websites = await getAllWebsites(); 
-  console.log("Running cron job")
+  const websites = await getAllWebsites();
+  console.log("Running cron job");
   cron.schedule("*/10 * * * * *", async () => {
     console.log("Running cron job");
-    
+
     for (const website of websites) {
       try {
         const trackingData = await createTrackingData(website);
         const result = await checkPageChanges(trackingData);
         if (result === true) {
           const contentChanges = getContentChanges(trackingData);
-          writeToSheet(contentChanges);
+          writeToGoogleSheet(contentChanges);
           printAllData(trackingData, contentChanges);
           await saveWebsiteData(trackingData);
         } else {
@@ -34,6 +33,6 @@ const main = async () => {
       }
     }
   });
-}
+};
 
-module.exports = main;
+export default main;

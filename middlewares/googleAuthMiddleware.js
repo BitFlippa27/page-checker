@@ -1,5 +1,5 @@
 import google from "googleapis";
-import serviceAccount from '../coherent-window-405214-47c7aa588fc3.json';
+import serviceAccount from '../coherent-window-405214-47c7aa588fc3.json' assert { type:"json" };
 
 
 const createJwtClient = () => {

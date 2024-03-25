@@ -1,3 +1,1 @@
-import { default as fetchWebContent } from "./websiteController";
-
-export { fetchWebContent } 
+export { fetchWebContent } from "./websiteController.js"; 
