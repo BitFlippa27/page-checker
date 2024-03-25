@@ -1,11 +1,12 @@
 const cron = require("node-cron");
-const writeToSheet = require("./googleApi.js");
-const { getAllWebsites } = require("./models/websiteData.model.js");
+const writeToSheet = require("./services/sheetsApiService.js");
+const { getAllWebsites } = require("./models/websiteModel.js");
+
 const { 
   createTrackingData, 
   checkPageChanges, 
   getContentChanges, 
-  saveToDb, 
+  savesaveWebsiteDataToDb, 
   printAllData
 } = require("./utils/utils.js");
 
@@ -23,12 +24,12 @@ const main = async () => {
           const contentChanges = getContentChanges(trackingData);
           writeToSheet(contentChanges);
           printAllData(trackingData, contentChanges);
-          await saveToDb(trackingData);
+          await saveWebsiteData(trackingData);
         } else {
           continue;
         }
       } catch (error) {
-        console.log(`Error in cron job: ${error.message}`);
+        console.error(`Error in cron job: ${error.message}`);
         throw new Error("Error");
       }
     }

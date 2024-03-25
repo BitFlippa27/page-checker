@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const WebSiteDataSchema = new mongoose.Schema({
+const websiteModel = new mongoose.Schema({
   url: {
     type: String,
     required: false
@@ -23,4 +23,7 @@ const WebSiteDataSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('website', WebSiteDataSchema);
+export default mongoose.model('website', websiteModel);
+
+
+
