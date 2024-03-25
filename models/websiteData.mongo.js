@@ -3,19 +3,19 @@ const mongoose = require('mongoose');
 const WebSiteDataSchema = new mongoose.Schema({
   url: {
     type: String,
-    required: true
+    required: false
   },
   httpStatus: {
     type: Number,
-    required: true
+    required: false
   },
   loadingTime: {
     type: Number,
-    required: true
+    required: false
   },
   webContent: {
     type: String,
-    required: true
+    required: false
   },
   changeDate: {
     type: Date,

@@ -9,11 +9,12 @@ const {
   printAllData
 } = require("./utils/utils.js");
 
-const main = () => {
+const main = async () => {
+  const websites = await getAllWebsites(); 
   console.log("Running cron job")
   cron.schedule("*/10 * * * * *", async () => {
     console.log("Running cron job");
-    const websites = await getAllWebsites(); 
+    
     for (const website of websites) {
       try {
         const trackingData = await createTrackingData(website);

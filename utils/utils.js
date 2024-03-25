@@ -12,6 +12,10 @@ const checkPageChanges = async (trackingData) => {
     if (webContent !== fetchedWebContent) {
       process.stdout.write("Bingo! The content has changed \n");
       return true;
+    } else if (!webContent) {
+      console.log("New Url!");
+
+      return false;
     } else {
       process.stdout.write("No changes in the content \n");
       return false;
@@ -22,9 +26,9 @@ const checkPageChanges = async (trackingData) => {
 };
 
 const createTrackingData = async (websiteDataDbObject) => {
-  let { url, webContent } = websiteDataDbObject;
-  let { httpStatus, loadingTime, fetchedWebContent, changeDate } = websiteData;
+  const { url, webContent } = websiteDataDbObject;
 
+  let { httpStatus, loadingTime, fetchedWebContent, changeDate } = websiteData;
   try {
     const start = Date.now();
     const response = await fetchWebContent(url);
@@ -37,7 +41,14 @@ const createTrackingData = async (websiteDataDbObject) => {
     httpStatus = response.status;
     fetchedWebContent = await response.text();
 
-    return { url, loadingTime, httpStatus, webContent, fetchedWebContent, changeDate };
+    return {
+      url,
+      loadingTime,
+      httpStatus,
+      webContent,
+      fetchedWebContent,
+      changeDate,
+    };
   } catch (error) {
     console.log(`Error in getTrackingData: ${error.message}`);
   }
@@ -71,6 +82,7 @@ const getContentChanges = (trackingData) => {
   const { webContent, fetchedWebContent } = trackingData;
   const changes = Diff.diffWords(webContent, fetchedWebContent);
   let finalChanges = "";
+  
   changes.forEach((part) => {
     // green for additions, red for deletions
     let text = part.added
@@ -86,8 +98,8 @@ const getContentChanges = (trackingData) => {
 };
 
 const printAllData = (trackingData, contentChanges) => {
-  const { url, httpStatus, loadingTime, webContent, newContent, changeDate } =
-    trackingData;
+  const { url, httpStatus, loadingTime, changeDate } = trackingData;
+
   process.stdout.write(contentChanges);
   process.stdout.write(`HTTP Status: ${httpStatus} \n`);
   process.stdout.write(`Loading Time: ${loadingTime}ms \n`);
@@ -96,16 +108,25 @@ const printAllData = (trackingData, contentChanges) => {
 };
 
 const saveToDb = async (trackingData) => {
-  const { url, httpStatus, loadingTime, fetchedWebContent, changeDate } = trackingData;
-
+  const {
+    url,
+    httpStatus,
+    loadingTime,
+    fetchedWebContent,
+    changeDate,
+    webContent,
+  } = trackingData;
   try {
-    await websiteDataSchema.create({
-      url: url,
-      httpStatus: httpStatus,
-      loadingTime: loadingTime,
-      webContent: fetchedWebContent,
-      changeDate: changeDate,
-    });
+    await websiteDataSchema.findOneAndUpdate(
+      { url }, // find a document with `url`
+      {
+        httpStatus: httpStatus,
+        loadingTime: loadingTime,
+        webContent: fetchedWebContent,
+        changeDate: changeDate || Date.now(),
+      },
+      { new: true, upsert: true } // options
+    );
   } catch (error) {
     console.log(`Error in saveToDB: ${error.message}`);
   }
