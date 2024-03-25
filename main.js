@@ -23,7 +23,7 @@ const main = () => {
           writeToSheet(contentChanges);
           printAllData(trackingData, contentChanges);
           await saveToDb(trackingData);
-        }else {
+        } else {
           continue;
         }
       } catch (error) {
