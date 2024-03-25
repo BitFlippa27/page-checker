@@ -23,5 +23,4 @@ const WebSiteDataSchema = new mongoose.Schema({
   },
 });
 
-populateDb();
 module.exports = mongoose.model('website', WebSiteDataSchema);

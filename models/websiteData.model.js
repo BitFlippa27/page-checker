@@ -3,7 +3,7 @@ const websiteDataSchema = require("../models/websiteData.mongo.js");
 const websiteData = {
   httStatus: Number,
   loadingTime: Number,
-  webContent: String,
+  fetchedWebContent: String,
   changeDate: Date,
   url: String,
   //contentChanges: String,
