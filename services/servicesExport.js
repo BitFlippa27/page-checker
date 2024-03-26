@@ -1,5 +1,5 @@
 export {
-  createTrackingData,
+  createWebsiteData,
   checkPageChanges,
   getContentChanges,
   printAllData,

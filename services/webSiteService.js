@@ -1,41 +1,42 @@
-import { fetchWebContent } from "../controllers/controllersExport.js";
-import { Diff } from "diff";
+import * as Diff from "diff";
+import colors from "colors";
 
-const createTrackingData = async (websiteDataDbObject) => {
-  const { url, webContent } = websiteDataDbObject;
+const createWebsiteData = async (response, oldWebsiteData) => {
+  const { url } = oldWebsiteData;
 
   try {
-    const start = Date.now();
-    const response = await fetchWebContent(url);
-    if (!response) {
-      return;
-    }
-    let loadingTime = Date.now() - start;
-    let fetchedWebContent = await response.text();
+    const fetchedWebContent = await response.text();
 
-    const websiteData = {
-      url,
-      loadingTime,
+    const newWebsiteData = {
+      url: url,
+      loadingTime: 1,
       httpStatus: response.status,
-      webContent: fetchedWebContent,
-      changeDate: new Date() - start,
+      newWebContent: fetchedWebContent,
+      changeDate: Date.now()
+    };
+    
+    return {
+      oldWebsiteData,
+      newWebsiteData,
     };
 
-    return websiteData;
   } catch (error) {
-    console.error(`Error in getTrackingData: ${error.message}`);
+    console.error(`Error in createWebsiteData: ${error.message}`);
   }
 };
 
-const checkPageChanges = async (trackingData) => {
+const checkPageChanges = async (websiteData) => {
+  const { oldWebsiteData, newWebsiteData } = websiteData;
+  const { webContent } = oldWebsiteData;
+  const { newWebContent } = newWebsiteData;
+  
   try {
-    const { webContent, fetchedWebContent } = trackingData;
-    if (webContent !== fetchedWebContent) {
+    if (webContent !== newWebContent) {
       process.stdout.write("Bingo! The content has changed \n");
       return true;
     } else if (!webContent) {
       console.log("New Url!");
-
+      //addUrl
       return false;
     } else {
       process.stdout.write("No changes in the content \n");
@@ -46,27 +47,37 @@ const checkPageChanges = async (trackingData) => {
   }
 };
 
-const getContentChanges = (trackingData) => {
-  const { webContent, fetchedWebContent } = trackingData;
-  const changes = Diff.diffWords(webContent, fetchedWebContent);
-  let finalChanges = "";
+const getContentChanges = (websiteData) => {
+  const { oldWebsiteData, newWebsiteData } = websiteData;
+  const { webContent } = oldWebsiteData;
+  const { newWebContent } = newWebsiteData;
 
-  changes.forEach((part) => {
-    // green for additions, red for deletions
-    let text = part.added
-      ? colors.green(part.value)
-      : part.removed
-      ? colors.bgRed(part.value)
-      : part.value;
+  try {
+    const changes = Diff.diffWords(webContent, newWebContent);
+    let finalChanges = "";
+
+    changes.forEach((part) => {
+      // green for additions, red for deletions
+      let text = part.added
+        ? colors.green(part.value)
+        : part.removed
+        ? colors.bgRed(part.value)
+        : part.value;
 
     finalChanges = finalChanges.concat(text);
   });
 
   return finalChanges;
+  
+  } catch (error) {
+    console.error(`Error in getContentChanges ${error.message}`);
+  }
+  
 };
 
-const printAllData = (trackingData, contentChanges) => {
-  const { url, httpStatus, loadingTime, changeDate } = trackingData;
+const printAllData = (websiteData, contentChanges) => {
+  const { newWebsiteData } = websiteData;
+  const { url, httpStatus, loadingTime, changeDate } = newWebsiteData;
 
   process.stdout.write(contentChanges);
   process.stdout.write(`HTTP Status: ${httpStatus} \n`);
@@ -76,7 +87,7 @@ const printAllData = (trackingData, contentChanges) => {
 };
 
 export {
-  createTrackingData,
+  createWebsiteData,
   checkPageChanges,
   getContentChanges,
   printAllData,

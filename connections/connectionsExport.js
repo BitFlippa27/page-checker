@@ -1,1 +1,1 @@
-export { connectMongoDB } from "./mongoConnection.js";
+export { connectMongoDB, mongoose } from "./mongoConnection.js";

@@ -10,9 +10,10 @@ const getAllWebsites = async () => {
   }
 };
 
-const saveWebsiteData = async (trackingData) => {
-  const { url, httpStatus, loadingTime, fetchedWebContent, changeDate } =
-    trackingData;
+const saveWebsiteData = async (websiteData) => {
+  const { newWebsiteData } = websiteData;
+  const { url, httpStatus, loadingTime, fetchedWebContent, changeDate } = newWebsiteData;
+  
   try {
     await websiteModel.findOneAndUpdate(
       { url }, // find a document with `url`
