@@ -5,7 +5,7 @@ import { fetchWebContent } from "./controllers/controllersExport.js";
 
 import {
   createWebsiteData,
-  checkPageChanges,
+  checkContentChanges,
   getContentChanges,
   printAllData,
 } from "./services/servicesExport.js";
@@ -19,18 +19,18 @@ const main = async () => {
     for (const website of websites) {
       try {
         const response = await fetchWebContent(website.url);
-        if (response) {
-          const websiteData = await createWebsiteData(response, website);
-          await checkPageChanges(websiteData);
-          //if no contentchanges continue
+        if (!response) {
+          continue;
+        }
+        const websiteData = await createWebsiteData(response, website);
+          
+        if (await checkContentChanges(websiteData)) {
           const contentChanges = getContentChanges(websiteData);
           writeToGoogleSheet(contentChanges);
           printAllData(websiteData, contentChanges);
           await saveWebsiteData(websiteData);
         }
-       else {
-        continue;
-       }
+      
       } catch (error) {
         console.error(`Error in cron job: ${error.message}`);
         throw new Error("Error");

@@ -25,7 +25,7 @@ const createWebsiteData = async (response, oldWebsiteData) => {
   }
 };
 
-const checkPageChanges = async (websiteData) => {
+const checkContentChanges = async (websiteData) => {
   const { oldWebsiteData, newWebsiteData } = websiteData;
   const { webContent } = oldWebsiteData;
   const { newWebContent } = newWebsiteData;
@@ -88,7 +88,7 @@ const printAllData = (websiteData, contentChanges) => {
 
 export {
   createWebsiteData,
-  checkPageChanges,
+  checkContentChanges,
   getContentChanges,
   printAllData,
 };

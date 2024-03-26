@@ -1,6 +1,6 @@
 export {
   createWebsiteData,
-  checkPageChanges,
+  checkContentChanges,
   getContentChanges,
   printAllData,
 } from "./webSiteService.js";
