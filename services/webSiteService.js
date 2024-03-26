@@ -1,6 +1,30 @@
 import * as Diff from "diff";
 import colors from "colors";
 
+const getWebsiteRespones = async (websites) => {
+  let validResponses = [];
+  let invalidRespones = [];
+  let response;
+  for (const website of websites) {
+    const { url } = website;
+    try {
+      response = await fetch(url);
+      } catch (error) {
+        console.error(`Could not fetch ${url} ${error.message}`)
+      }
+      if (response?.ok) {
+        validResponses.push(website);
+      }
+      else {
+        console.error(`HTTP Response Code: ${response?.status}`);
+        invalidRespones.push(url);
+        continue;
+      }
+  }
+
+  return { validResponses, invalidRespones }
+}; 
+
 const createWebsiteData = async (response, oldWebsiteData) => {
   const { url } = oldWebsiteData;
 
@@ -87,6 +111,7 @@ const printAllData = (websiteData, contentChanges) => {
 };
 
 export {
+  getWebsiteRespones,
   createWebsiteData,
   checkContentChanges,
   getContentChanges,

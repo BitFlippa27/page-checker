@@ -12,15 +12,15 @@ const getAllWebsites = async () => {
 
 const saveWebsiteData = async (websiteData) => {
   const { newWebsiteData } = websiteData;
-  const { url, httpStatus, loadingTime, fetchedWebContent, changeDate } = newWebsiteData;
-  
+  const { url, httpStatus, loadingTime, newWebContent, changeDate } = newWebsiteData;
+
   try {
     await websiteModel.findOneAndUpdate(
       { url }, // find a document with `url`
       {
         httpStatus: httpStatus,
         loadingTime: loadingTime,
-        webContent: fetchedWebContent,
+        webContent: newWebContent,
         changeDate: changeDate || Date.now(),
       },
       { new: true, upsert: true } // options
