@@ -1,1 +1,1 @@
-export { myEmitter, loadingTime } from "./event.js";
+export { emitter } from "./event.js";

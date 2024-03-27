@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { writeToGoogleSheet } from "../third-parties/sheetsApiService.js";
+import { writeToGoogleSheet } from "../services/third-parties/sheetsApiService.js";
 import { saveWebsiteData } from "../repositories/repositoriesExport.js";
 import { getWebsiteResponses } from "../services/servicesExport.js";
 import { filterReachableWebsites } from "../utils/utilsExports.js";
@@ -26,14 +26,13 @@ const startMonitoring = (websites) => {
       reachableWebsites = filterReachableWebsites(websites, responseObjects);
     }
     try {
-      console.log("reachableWebsites", reachableWebsites);
       for (const responseObject of responseObjects) {
         const newWebsiteData = await createMonitoringInfos(responseObject);
         const { webContent, newWebContent } = await checkContentChanges(newWebsiteData, websites)
         if (newWebContent) {
-          const contentChanges = getContentChanges(webContent, newWebContent);
-          writeToGoogleSheet(contentChanges);
-          printAllData(newWebsiteData, contentChanges);
+          const { finalChangesSheets, finalChangesCmd }  = getContentChanges(webContent, newWebContent);
+          writeToGoogleSheet(finalChangesSheets);
+          printAllData(newWebsiteData, finalChangesCmd);
           await saveWebsiteData(newWebsiteData);
         } else {
           console.log("No content changes");

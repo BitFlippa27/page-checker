@@ -1,4 +1,4 @@
-import { createJwtClient } from "../middlewares/middlewaresExport.js";
+import { createJwtClient } from "../../middlewares/middlewaresExport.js";
 
 const writeToGoogleSheet = (newContent) => {
   console.log("write to sheet");
@@ -6,7 +6,7 @@ const writeToGoogleSheet = (newContent) => {
   sheets.spreadsheets.values.update(
     {
       spreadsheetId: "1yRgaCuDJ2zL7pGSru-3qimB43GIPk4T5BGuwk3Byuho",
-      range: "Sheet1!A1", // Specify the starting cell to write data
+      range: "Sheet1!A1", 
       valueInputOption: "RAW",
       resource: {
         values: [[newContent]],
@@ -23,3 +23,4 @@ const writeToGoogleSheet = (newContent) => {
 };
 
 export { writeToGoogleSheet };
+  

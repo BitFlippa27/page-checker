@@ -1,23 +1,20 @@
 import  EventEmitter from 'node:events';
+import { sendSMS } from "../services/third-parties/smsService.js"
+import { sendEmail } from '../services/third-parties/emailService.js';
 
-const myEmitter = new EventEmitter();
+const emitter = new EventEmitter();
 
-let startTime;
-let endTime;
-let loadingTime;
 
 // Define a 'fetch-progress' event
-myEmitter.on('fetch-progress', (payload) => {
-  console.log('fetch-progress event fired!', payload);
-  startTime = payload.start;
+emitter.on('send-sms', (payload) => {
+  console.log('send-sms Event fired', payload);
+  sendSMS(payload);
 });
 
-// Define a 'fetch-finished' event
-myEmitter.on('fetch-finished', (payload) => {
-  console.log('fetch-finished event fired!', payload);
-  endTime = payload.end;
-  loadingTime = end - start;
+emitter.on('send-email', (payload) => {
+  console.log('send-email Event fired', payload);
+  sendEmail(payload);
 });
 
 
-export { myEmitter, loadingTime }
+export { emitter }

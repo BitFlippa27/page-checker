@@ -1,6 +1,6 @@
 import * as Diff from "diff";
 import colors from "colors";
-import { myEmitter, loadingTime } from "../events/eventsExport.js";
+import { emitter } from "../events/eventsExport.js";
 
 const getWebsiteResponses = async (websites) => {
   let validResponses = [];
@@ -13,12 +13,9 @@ const getWebsiteResponses = async (websites) => {
     const { url } = website;
 
     try {
-      //myEmitter.emit("fetch-start", { start: startTime = Date.now() });
       startTime = Date.now();
       response = await fetch(url);
       endTime = Date.now();
-      
-      //myEmitter.emit("fetch-end", { end: endTime = Date.now() });
 
     } catch (error) {
       console.error(`Could not fetch ${url} ${error.message}`);
@@ -38,8 +35,6 @@ const getWebsiteResponses = async (websites) => {
 const createMonitoringInfos = async (newWebSiteData) => {
   const newWebContent = await newWebSiteData.text();
   
-    
-
   try {
     const monitoringInfos = {
       url: await newWebSiteData.url,
@@ -65,14 +60,16 @@ const checkContentChanges = async (newWebsiteData, websites) => {
     try {
       if (webContent !== newWebContent) {
         console.log("Bingo! The content has changed \n");
-        //trigger event ?!
+        emitter.emit("send-sms", newWebsiteData.url);
+        //emitter.emit("send-email", newWebsiteData.url);
+
         return { webContent, newWebContent };
       } else if (!webContent) {
         console.log("New Url!");
         //addUrl
         return !newWebContent;
       } else {
-        console.log("No changes in the content \n");
+        //console.log("No changes in the content \n");
         return false;
       }
     } catch (error) {
@@ -84,7 +81,8 @@ const checkContentChanges = async (newWebsiteData, websites) => {
 const getContentChanges = (oldWebContent, newWebContent) => {
   try {
     const changes = Diff.diffWords(oldWebContent, newWebContent);
-    let finalChanges = "";
+    let finalChangesCmd = "";
+    let finalChangesSheets = "";
 
     changes.forEach((part) => {
       // green for additions, red for deletions
@@ -94,10 +92,17 @@ const getContentChanges = (oldWebContent, newWebContent) => {
         ? colors.bgRed(part.value)
         : part.value;
 
-      finalChanges = finalChanges.concat(text);
+      finalChangesCmd = finalChangesCmd.concat(text);
     });
 
-    return finalChanges;
+    changes.forEach((part) => {
+      // green for additions, red for deletions
+      let text = part.value;
+
+      finalChangesSheets = finalChangesSheets.concat(text);
+    });
+  
+    return { finalChangesSheets, finalChangesCmd };
   } catch (error) {
     console.error(`Error in getContentChanges ${error.message}`);
   }
