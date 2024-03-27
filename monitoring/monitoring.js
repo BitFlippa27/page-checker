@@ -16,35 +16,29 @@ const startMonitoring = (websites) => {
     console.log("Running cron job");
     let responseObjects;
     let reachableWebsites;
-
     try {
       responseObjects = await getWebsiteResponses(websites);
-      if (responseObjects.length !== websites.length) {
-        reachableWebsites = filterReachableWebsites(websites, responseObjects);
-        websites = reachableWebsites;
-      }
-
     } catch (error) {
-        console.error(`Error in cron job: ${error.message}`);
+      console.error(`Error when fetching ${error}`);
     }
-      for (const responseObject of responseObjects) {
-        const newWebsiteData = await createMonitoringInfos(responseObject);
-        const { webContent, newWebContent } = await checkContentChanges(newWebsiteData, websites)
-        if (newWebContent) {
-          const contentChanges = getContentChanges(webContent, newWebContent);
-          writeToGoogleSheet(contentChanges);
-          printAllData(newWebsiteData, contentChanges);
-          await saveWebsiteData(newWebsiteData);
-      }
-      else {
+    
+    if (responseObjects.length !== websites.length) {
+      reachableWebsites = filterReachableWebsites(websites, responseObjects);
+    }
+    for (const responseObject of responseObjects) {
+      const newWebsiteData = await createMonitoringInfos(responseObject);
+      const { webContent, newWebContent } = await checkContentChanges(newWebsiteData, reachableWebsites)
+      if (newWebContent) {
+        const contentChanges = getContentChanges(webContent, newWebContent);
+        writeToGoogleSheet(contentChanges);
+        printAllData(newWebsiteData, contentChanges);
+        await saveWebsiteData(newWebsiteData);
+      } else {
         console.log("No content changes");
         continue;
       }
     }
-    
-    
-    
-  })
+  });
 };
 
 export { startMonitoring }

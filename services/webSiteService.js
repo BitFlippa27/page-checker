@@ -1,67 +1,73 @@
 import * as Diff from "diff";
 import colors from "colors";
+import { myEmitter, loadingTime } from "../events/eventsExport.js";
 
 const getWebsiteResponses = async (websites) => {
   let validResponses = [];
-
+  let startTime, endTime;
 
   let response;
   for (const website of websites) {
     const { url } = website;
+
     try {
+      //myEmitter.emit("fetch-start", { start: startTime = Date.now() });
+      startTime = Date.now();
       response = await fetch(url);
-      } catch (error) {
-        console.error(`Could not fetch ${url} ${error.message}`)
-      }
-      if (response?.ok) {
-        validResponses.push(response);
-      }
-      else {
-        console.error(`HTTP Response Code: ${response?.status}`);
-        continue;
-      }
+      endTime = Date.now();
+
+      //myEmitter.emit("fetch-end", { end: endTime = Date.now() });
+
+    } catch (error) {
+      console.error(`Could not fetch ${url} ${error.message}`);
+    }
+    if (response?.ok) {
+     const responseClone = response.clone();
+      validResponses.push({...responseClone, loadingTime});
+    } else {
+      console.error(`HTTP Response Code: ${response?.status}`);
+      continue;
+    }
   }
 
   return validResponses;
-}; 
+};
 
 const createMonitoringInfos = async (newWebSiteData) => {
-const newWebContent = await newWebSiteData.text();
-const loadingTime = await newWebSiteData.endTime - await newWebSiteData.startTime;
-  
+  const newWebContent = await newWebSiteData.text();
+  console.log(await newWebSiteData); 
+    
+
   try {
     const monitoringInfos = {
       url: await newWebSiteData.url,
-      loadingTime: loadingTime,
+      loadingTime: await newWebSiteData.loadingTime,
       httpStatus: await newWebSiteData.status,
       newWebContent: newWebContent,
-      changeDate: Date.now()
+      changeDate: Date.now(),
     };
-    
+
     return monitoringInfos;
-   
 
   } catch (error) {
-    console.error(`Error in createWebsiteData: ${error.message}`);
+    console.error(`Error in createMonitoringInfos: ${error.message}`);
   }
 };
 
 const checkContentChanges = async (newWebsiteData, websites) => {
-  
   for (const website of websites) {
-    const webContent  = website.webContent;
-    console.log("webContent",webContent)
+    const webContent = website.webContent;
     const newWebContent = await newWebsiteData.newWebContent;
-    console.log("newWebContent",newWebContent)
+    
     try {
       if (webContent !== newWebContent) {
         console.log("Bingo! The content has changed \n");
         //trigger event ?!
-        return { webContent, newWebContent }
+        return { webContent, newWebContent };
       } else if (!webContent) {
         console.log("New Url!");
         //addUrl
-        return false;
+        return !newWebContent;
       } else {
         console.log("No changes in the content \n");
         return false;
@@ -70,12 +76,7 @@ const checkContentChanges = async (newWebsiteData, websites) => {
       console.error(`Error in checkPageChanges ${error.message}`);
     }
   }
-
-  
 };
-
-
-
 
 const getContentChanges = (oldWebContent, newWebContent) => {
   try {
@@ -90,15 +91,13 @@ const getContentChanges = (oldWebContent, newWebContent) => {
         ? colors.bgRed(part.value)
         : part.value;
 
-    finalChanges = finalChanges.concat(text);
-  });
+      finalChanges = finalChanges.concat(text);
+    });
 
-  return finalChanges;
-  
+    return finalChanges;
   } catch (error) {
     console.error(`Error in getContentChanges ${error.message}`);
   }
-  
 };
 
 const printAllData = (websiteData, contentChanges) => {
@@ -109,7 +108,7 @@ const printAllData = (websiteData, contentChanges) => {
   console.log(`Loading Time: ${loadingTime}ms \n`);
   console.log(`Date of change: ${changeDate} \n`);
   console.log(`Website: ${url} \n`);
-  };
+};
 
 export {
   getWebsiteResponses,
