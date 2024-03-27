@@ -4,9 +4,11 @@ import { myEmitter, loadingTime } from "../events/eventsExport.js";
 
 const getWebsiteResponses = async (websites) => {
   let validResponses = [];
-  let startTime, endTime;
-
+  let startTime;
+  let endTime;
   let response;
+  let loadingTime;
+
   for (const website of websites) {
     const { url } = website;
 
@@ -15,7 +17,7 @@ const getWebsiteResponses = async (websites) => {
       startTime = Date.now();
       response = await fetch(url);
       endTime = Date.now();
-
+      
       //myEmitter.emit("fetch-end", { end: endTime = Date.now() });
 
     } catch (error) {
@@ -23,19 +25,20 @@ const getWebsiteResponses = async (websites) => {
     }
     if (response?.ok) {
      const responseClone = response.clone();
-      validResponses.push({...responseClone, loadingTime});
+     responseClone.loadingTime = endTime - startTime;
+     validResponses.push(responseClone);
     } else {
       console.error(`HTTP Response Code: ${response?.status}`);
       continue;
     }
   }
-
   return validResponses;
 };
 
 const createMonitoringInfos = async (newWebSiteData) => {
+  console.log("newWebSiteData", await newWebSiteData); 
   const newWebContent = await newWebSiteData.text();
-  console.log(await newWebSiteData); 
+  
     
 
   try {
