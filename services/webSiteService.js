@@ -7,7 +7,7 @@ const getWebsiteResponses = async (websites) => {
   let startTime;
   let endTime;
   let response;
-  let loadingTime;
+  
 
   for (const website of websites) {
     const { url } = website;
@@ -36,7 +36,6 @@ const getWebsiteResponses = async (websites) => {
 };
 
 const createMonitoringInfos = async (newWebSiteData) => {
-  console.log("newWebSiteData", await newWebSiteData); 
   const newWebContent = await newWebSiteData.text();
   
     
@@ -59,6 +58,7 @@ const createMonitoringInfos = async (newWebSiteData) => {
 
 const checkContentChanges = async (newWebsiteData, websites) => {
   for (const website of websites) {
+    
     const webContent = website.webContent;
     const newWebContent = await newWebsiteData.newWebContent;
     

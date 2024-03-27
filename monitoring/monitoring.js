@@ -18,7 +18,6 @@ const startMonitoring = (websites) => {
     let reachableWebsites;
     try {
       responseObjects = await getWebsiteResponses(websites);
-      console.log("responseObjects",responseObjects);
     } catch (error) {
       console.error(`Error when fetching ${error.message}`);
     }
@@ -27,9 +26,10 @@ const startMonitoring = (websites) => {
       reachableWebsites = filterReachableWebsites(websites, responseObjects);
     }
     try {
+      console.log("reachableWebsites", reachableWebsites);
       for (const responseObject of responseObjects) {
         const newWebsiteData = await createMonitoringInfos(responseObject);
-        const { webContent, newWebContent } = await checkContentChanges(newWebsiteData, reachableWebsites)
+        const { webContent, newWebContent } = await checkContentChanges(newWebsiteData, websites)
         if (newWebContent) {
           const contentChanges = getContentChanges(webContent, newWebContent);
           writeToGoogleSheet(contentChanges);
@@ -41,7 +41,7 @@ const startMonitoring = (websites) => {
         }
       }
     } catch (error) {
-      console.error(`Error in loop ${error.message}`);
+      console.error(`Error in main loop ${error.message}`);
     }
     
   });
