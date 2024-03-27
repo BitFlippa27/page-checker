@@ -1,4 +1,4 @@
-import { getAllWebsites } from "./repositories/repositoriesExport.js";
+import { getAllWebsites, addUrl } from "./repositories/repositoriesExport.js";
 import { startMonitoring } from "./monitoring/monitoringsExport.js";
 
 const main = async () => {

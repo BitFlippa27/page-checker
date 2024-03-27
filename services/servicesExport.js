@@ -1,6 +1,6 @@
 export {
-  getWebsiteRespones,
-  createWebsiteData,
+  getWebsiteResponses,
+  createMonitoringInfos,
   checkContentChanges,
   getContentChanges,
   printAllData,

@@ -1,9 +1,10 @@
 import * as Diff from "diff";
 import colors from "colors";
 
-const getWebsiteRespones = async (websites) => {
+const getWebsiteResponses = async (websites) => {
   let validResponses = [];
-  let invalidRespones = [];
+
+
   let response;
   for (const website of websites) {
     const { url } = website;
@@ -13,71 +14,72 @@ const getWebsiteRespones = async (websites) => {
         console.error(`Could not fetch ${url} ${error.message}`)
       }
       if (response?.ok) {
-        validResponses.push(website);
+        validResponses.push(response);
       }
       else {
         console.error(`HTTP Response Code: ${response?.status}`);
-        invalidRespones.push(url);
         continue;
       }
   }
 
-  return { validResponses, invalidRespones }
+  return validResponses;
 }; 
 
-const createWebsiteData = async (response, oldWebsiteData) => {
-  const { url } = oldWebsiteData;
-
+const createMonitoringInfos = async (newWebSiteData) => {
+const newWebContent = await newWebSiteData.text();
+const loadingTime = await newWebSiteData.endTime - await newWebSiteData.startTime;
+  
   try {
-    const fetchedWebContent = await response.text();
-
-    const newWebsiteData = {
-      url: url,
-      loadingTime: 1,
-      httpStatus: response.status,
-      newWebContent: fetchedWebContent,
+    const monitoringInfos = {
+      url: await newWebSiteData.url,
+      loadingTime: loadingTime,
+      httpStatus: await newWebSiteData.status,
+      newWebContent: newWebContent,
       changeDate: Date.now()
     };
     
-    return {
-      oldWebsiteData,
-      newWebsiteData,
-    };
+    return monitoringInfos;
+   
 
   } catch (error) {
     console.error(`Error in createWebsiteData: ${error.message}`);
   }
 };
 
-const checkContentChanges = async (websiteData) => {
-  const { oldWebsiteData, newWebsiteData } = websiteData;
-  const { webContent } = oldWebsiteData;
-  const { newWebContent } = newWebsiteData;
+const checkContentChanges = async (newWebsiteData, websites) => {
   
-  try {
-    if (webContent !== newWebContent) {
-      process.stdout.write("Bingo! The content has changed \n");
-      return true;
-    } else if (!webContent) {
-      console.log("New Url!");
-      //addUrl
-      return false;
-    } else {
-      process.stdout.write("No changes in the content \n");
-      return false;
+  for (const website of websites) {
+    const webContent  = website.webContent;
+    console.log("webContent",webContent)
+    const newWebContent = await newWebsiteData.newWebContent;
+    console.log("newWebContent",newWebContent)
+    try {
+      if (webContent !== newWebContent) {
+        console.log("Bingo! The content has changed \n");
+        //trigger event ?!
+        return { webContent, newWebContent }
+      } else if (!webContent) {
+        console.log("New Url!");
+        //addUrl
+        return false;
+      } else {
+        console.log("No changes in the content \n");
+        return false;
+      }
+    } catch (error) {
+      console.error(`Error in checkPageChanges ${error.message}`);
     }
-  } catch (error) {
-    console.error(`Error in checkPageChanges ${error.message}`);
   }
+
+  
 };
 
-const getContentChanges = (websiteData) => {
-  const { oldWebsiteData, newWebsiteData } = websiteData;
-  const { webContent } = oldWebsiteData;
-  const { newWebContent } = newWebsiteData;
 
+
+
+const getContentChanges = (oldWebContent, newWebContent) => {
   try {
-    const changes = Diff.diffWords(webContent, newWebContent);
+    const changes = Diff.diffWords(oldWebContent, newWebContent);
     let finalChanges = "";
 
     changes.forEach((part) => {
@@ -100,19 +102,18 @@ const getContentChanges = (websiteData) => {
 };
 
 const printAllData = (websiteData, contentChanges) => {
-  const { newWebsiteData } = websiteData;
-  const { url, httpStatus, loadingTime, changeDate } = newWebsiteData;
+  const { url, httpStatus, loadingTime, changeDate } = websiteData;
 
-  process.stdout.write(contentChanges);
-  process.stdout.write(`HTTP Status: ${httpStatus} \n`);
-  process.stdout.write(`Loading Time: ${loadingTime}ms \n`);
-  process.stdout.write(`Date of change: ${changeDate} \n`);
-  process.stdout.write(`Website: ${url} \n`);
-};
+  console.log(contentChanges);
+  console.log(`HTTP Status: ${httpStatus} \n`);
+  console.log(`Loading Time: ${loadingTime}ms \n`);
+  console.log(`Date of change: ${changeDate} \n`);
+  console.log(`Website: ${url} \n`);
+  };
 
 export {
-  getWebsiteRespones,
-  createWebsiteData,
+  getWebsiteResponses,
+  createMonitoringInfos,
   checkContentChanges,
   getContentChanges,
   printAllData,

@@ -92,3 +92,49 @@ const urls = [
   "http://localhost:3000",
   "https://bingo-game-phi.vercel.app/",
 ];
+
+
+import cron from "node-cron";
+import { writeToGoogleSheet } from "../third-parties/sheetsApiService.js";
+import { saveWebsiteData } from "../repositories/repositoriesExport.js";
+import { getWebsiteResponses } from "../services/servicesExport.js";
+import { filterReachableWebsites } from "../utils/utilsExports.js";
+
+import {
+  createMonitoringInfos,
+  checkContentChanges,
+  getContentChanges,
+  printAllData,
+} from "../services/servicesExport.js";
+
+const startMonitoring = (websites) => {
+  cron.schedule("*/10 * * * * *", async () => {
+    console.log("Running cron job");
+
+    try {
+      const validResponses = await getWebsiteResponses(websites);
+      const reachableWebsites = filterReachableWebsites(websites, validResponses);
+      websites = reachableWebsites;
+    } catch (error) {
+        console.error(`Error in cron job: ${error.message}`);
+    }
+      for (const i=0;i<=validResponses.length;i++) {
+        if (await checkContentChanges(validResponses[i], websites)) {
+          const websiteData = await createMonitoringInfos(response, websites);
+          const contentChanges = getContentChanges(websiteData);
+          writeToGoogleSheet(contentChanges);
+          printAllData(websiteData, contentChanges);
+          await saveWebsiteData(websiteData);
+      }
+      else {
+        console.log("No content changes");
+        continue;
+      }
+    }
+    
+    
+    
+  })
+};
+
+export { startMonitoring }

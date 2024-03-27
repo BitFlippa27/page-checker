@@ -1,12 +1,12 @@
-import { websiteModel } from "../models/modelsExport.js";
+import { WebsiteData } from "../models/modelsExport.js";
 
 const getAllWebsites = async () => {
   // to repo
   try {
-    const urls = await websiteModel.find({});
+    const urls = await WebsiteData.find({});
     return urls;
   } catch (error) {
-    console.error(`Error in getAllurls: ${error.message}`);
+    console.error(`Error in getAllWebsites: ${error.message}`);
   }
 };
 
@@ -30,15 +30,21 @@ const saveWebsiteData = async (websiteData) => {
   }
 };
 
-/*const addUrl = async (url) => {
+const addUrl = async () => {
   try {
-    const newUrl = new websiteData({ url });
-    await newUrl.save();
+    await WebsiteData.create(
+    { 
+      url: "https://bingo-game-phi.vercel.app/",
+      httpStatus: 200,
+      loadingTime: 8,
+      webContent: "test",
+      changeDate: Date.now() || Date.now(),
+    }
+    );
+    
   } catch (error) {
     console.log(`Error in addUrl: ${error.message}`);
   }
-
 }
-*/
 
-export { getAllWebsites, saveWebsiteData };
+export { getAllWebsites, saveWebsiteData, addUrl };

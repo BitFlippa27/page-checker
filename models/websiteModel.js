@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const websiteModel = new mongoose.Schema({
+const WebsiteData = new mongoose.Schema({
   url: {
     type: String,
     required: false
@@ -23,7 +23,7 @@ const websiteModel = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('website', websiteModel);
+export default mongoose.model('website', WebsiteData);
 
 
 

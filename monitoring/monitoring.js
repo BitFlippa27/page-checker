@@ -1,11 +1,11 @@
 import cron from "node-cron";
 import { writeToGoogleSheet } from "../third-parties/sheetsApiService.js";
 import { saveWebsiteData } from "../repositories/repositoriesExport.js";
-import { getWebsiteRespones } from "../services/servicesExport.js";
+import { getWebsiteResponses } from "../services/servicesExport.js";
 import { filterReachableWebsites } from "../utils/utilsExports.js";
 
 import {
-  createWebsiteData,
+  createMonitoringInfos,
   checkContentChanges,
   getContentChanges,
   printAllData,
@@ -14,28 +14,36 @@ import {
 const startMonitoring = (websites) => {
   cron.schedule("*/10 * * * * *", async () => {
     console.log("Running cron job");
+    let responseObjects;
+    let reachableWebsites;
 
     try {
-      const {validResponses, invalidRespones } = await getWebsiteRespones(websites);
-       const reachableWebsites = filterReachableWebsites(validResponses, invalidRespones);
-       websites = reachableWebsites;
+      responseObjects = await getWebsiteResponses(websites);
+      if (responseObjects.length !== websites.length) {
+        reachableWebsites = filterReachableWebsites(websites, responseObjects);
+        websites = reachableWebsites;
+      }
+
     } catch (error) {
         console.error(`Error in cron job: ${error.message}`);
     }
+      for (const responseObject of responseObjects) {
+        const newWebsiteData = await createMonitoringInfos(responseObject);
+        const { webContent, newWebContent } = await checkContentChanges(newWebsiteData, websites)
+        if (newWebContent) {
+          const contentChanges = getContentChanges(webContent, newWebContent);
+          writeToGoogleSheet(contentChanges);
+          printAllData(newWebsiteData, contentChanges);
+          await saveWebsiteData(newWebsiteData);
+      }
+      else {
+        console.log("No content changes");
+        continue;
+      }
+    }
     
-    for (const response of validResponses) {
-      const websiteData = await createWebsiteData(response, websites);
-
-    if (await checkContentChanges(websiteData)) {
-      const contentChanges = getContentChanges(websiteData);
-      writeToGoogleSheet(contentChanges);
-      printAllData(websiteData, contentChanges);
-      await saveWebsiteData(websiteData);
-    }
-    else {
-      continue;
-    }
-    }
+    
+    
   })
 };
 

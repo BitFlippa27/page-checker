@@ -1,1 +1,1 @@
-export { default as websiteModel } from "./websiteModel.js"; 
+export { default as WebsiteData } from "./websiteModel.js"; 
