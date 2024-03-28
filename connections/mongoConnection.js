@@ -1,9 +1,12 @@
-import { MONGO_URL } from "../config/configExport.js";
 import mongoose from "mongoose";
+import { config } from "../env/envExport.js"
+config();
+
+const mongoUrl = process.env.MONGO_URL;
 
 const connectMongoDB = async () => {
   try {
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(mongoUrl);
   } catch (error) {
     console.error(error);
   }
@@ -16,5 +19,6 @@ const connectMongoDB = async () => {
     console.error(`MongoDB connection error: ${error.message}`);
   });
 };
+
 
 export { connectMongoDB, mongoose };
