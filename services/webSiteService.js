@@ -4,6 +4,13 @@ import { emitter } from "../events/eventsExport.js";
 import { saveWebsiteData } from "../repositories/repositoriesExport.js";
 import { writeToGoogleSheet } from "../services/third-parties/thirdPartiesExport.js";
 
+/**
+ * Fetches the responses from a list of websites.
+ * @param {Object[]} websites - An array of website objects to fetch responses from.
+ * @returns {Promise<Object[]>} - A promise that resolves with an array of response objects.
+ * @throws {Error} - Throws an error if there was a problem fetching the responses.
+ * @async
+ */
 const getWebsiteResponses = async (websites) => {
   let validResponses = [];
   let startTime;
@@ -33,7 +40,15 @@ const getWebsiteResponses = async (websites) => {
   return validResponses;
 };
 
+/**
+ * Iterates over the response objects, checks for content changes, and saves new website data.
+ * @param {Object[]} responseObjects - The valid response objects to iterate over.
+ * @param {Object[]} websites - The original list of websites from the database.
+ * @async
+ */
 const iterateWebsites = async (responseObjects, websites) => {
+  //creates a Map from the websites array, using the url as the key. 
+  //allows for efficient lookup of the website data when iterating over the responseObjects
   const websiteMap = new Map(websites.map(website => [website.url, website]));
 
   for (const responseObject of responseObjects) {
@@ -56,6 +71,13 @@ const iterateWebsites = async (responseObjects, websites) => {
   }
 };
 
+/**
+ * Creates monitoring information for the new website.
+ * @param {Object} newWebSiteData - The new website data.
+ * @returns {Promise<Object>} - A promise that resolves with the monitoring information.
+ * @throws {Error} - Throws an error if there was a problem creating the monitoring information.
+ * @async
+ */
 const createMonitoringInfos = async (newWebSiteData) => { 
   let newWebContent;
   //Dont know why yet, once its a Response Object and once not when a bad url is passed in getWebsiteResponses
@@ -81,6 +103,15 @@ const createMonitoringInfos = async (newWebSiteData) => {
   }
 };
 
+/**
+ * Checks if the content of a website has changed and triggers an event.
+ * @param {Object} newWebsiteData - The new website.
+ * @param {Object} website - The original website.
+ * @event send-sms
+ * @returns {Promise<Object|boolean>} - A promise that resolves with an object containing the old and new content if the content has changed, or a boolean indicating whether the website is new.
+ * @throws {Error} - Throws an error if there was a problem checking for content changes.
+ * @async
+ */
 const checkContentChanges = async (newWebsiteData, website) => {
   const webContent = website.webContent;
   const newWebContent = await newWebsiteData.newWebContent;
@@ -104,7 +135,14 @@ const checkContentChanges = async (newWebsiteData, website) => {
     console.error(`Error in checkPageChanges ${error.message}`);
   }
 };
-
+/**
+ * Main functionality, using the diff utility
+ * Gets the content changes between the old and new website content.
+ * @param {string} oldWebContent - The old website content.
+ * @param {string} newWebContent - The new website content.
+ * @returns {string} - A string that represents the changes between the old and new content. Additions are marked in green and deletions are marked in red.
+ * @throws {Error} - Throws an error if there was a problem getting the content changes.
+ */
 const getContentChanges = (oldWebContent, newWebContent) => {
   try {
     const changes = Diff.diffWords(oldWebContent, newWebContent);

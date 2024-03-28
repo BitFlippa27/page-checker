@@ -10,7 +10,8 @@ const getAllWebsites = async () => {
 };
 
 const saveWebsiteData = async (newWebsiteData) => {
-  const { url, httpStatus, loadingTime, newWebContent, changeDate } = newWebsiteData;
+  const { url, httpStatus, loadingTime, newWebContent, changeDate } =
+    newWebsiteData;
 
   try {
     await WebsiteData.findOneAndUpdate(
@@ -30,19 +31,16 @@ const saveWebsiteData = async (newWebsiteData) => {
 
 const addUrl = async (url) => {
   try {
-    await WebsiteData.create(
-    { 
+    await WebsiteData.create({
       url: url,
       httpStatus: 0,
       loadingTime: 0,
       webContent: "test",
       changeDate: Date.now() || Date.now(),
-    }
-    );
-    
+    });
   } catch (error) {
     console.log(`Error in addUrl: ${error.message}`);
   }
-}
+};
 
 export { getAllWebsites, saveWebsiteData, addUrl };

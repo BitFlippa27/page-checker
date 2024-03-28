@@ -2,6 +2,10 @@ import cron from "node-cron";
 import { getWebsiteResponses } from "../services/servicesExport.js";
 import { filterReachableWebsites } from "../utils/utilsExports.js";
 import { iterateWebsites } from "../services/servicesExport.js";
+/**
+ * Starts monitoring the provided websites.
+ * @param {Object[]} websites - The websites to monitor.
+ */
 
 const startMonitoring = (websites) => {
   console.log("Starting monitoring...");
@@ -9,21 +13,22 @@ const startMonitoring = (websites) => {
     let responseObjects;
     let reachableWebsites;
     try {
-      responseObjects = await getWebsiteResponses(websites);
+      // Collecting only good responses
+      validResponses = await getWebsiteResponses(websites);
     } catch (error) {
       console.error(`Error when fetching ${error.message}`);
     }
-
-    if (responseObjects.length !== websites.length) {
+    if (validResponses.length !== websites.length) {
       try {
-        reachableWebsites = filterReachableWebsites(websites, responseObjects);
+        //Remove bad responses
+        reachableWebsites = filterReachableWebsites(websites, validResponses);
         iterateWebsites(reachableWebsites, websites);
       } catch (error) {
         console.error(`Error when in main iteration ${error.message}`);
       }
     } else {
       try {
-        iterateWebsites(responseObjects, websites);
+        iterateWebsites(validResponses, websites);
       } catch (error) {
         console.error(`Error in main loop ${error.message}`);
       }
