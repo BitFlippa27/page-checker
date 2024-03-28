@@ -4,7 +4,6 @@ import { emitter } from "../events/eventsExport.js";
 import { saveWebsiteData } from "../repositories/repositoriesExport.js";
 import { writeToGoogleSheet } from "../services/third-parties/thirdPartiesExport.js";
 
-
 const getWebsiteResponses = async (websites) => {
   let validResponses = [];
   let startTime;
@@ -34,17 +33,19 @@ const getWebsiteResponses = async (websites) => {
 };
 
 const iterateWebsites = async (responseObjects, websites) => {
+  const websiteMap = new Map(websites.map(website => [website.url, website]));
+
   for (const responseObject of responseObjects) {
+    const website = websiteMap.get(responseObject.url);
+    if (!website) continue;
+
     const newWebsiteData = await createMonitoringInfos(responseObject);
     const { webContent, newWebContent } = await checkContentChanges(
       newWebsiteData,
-      websites
+      website
     );
     if (newWebContent) {
-      const { finalChangesSheets, finalChangesCmd } = getContentChanges(
-        webContent,
-        newWebContent
-      );
+      const { finalChangesSheets, finalChangesCmd } = getContentChanges(webContent,newWebContent);
       writeToGoogleSheet(finalChangesSheets);
       printAllData(newWebsiteData, finalChangesCmd);
       await saveWebsiteData(newWebsiteData);
@@ -72,29 +73,27 @@ const createMonitoringInfos = async (newWebSiteData) => {
   }
 };
 
-const checkContentChanges = async (newWebsiteData, websites) => {
-  for (const website of websites) {
-    const webContent = website.webContent;
-    const newWebContent = await newWebsiteData.newWebContent;
-    console.log("webContent", newWebsiteData.url);
-    console.log("newWebContent", website.url);
+const checkContentChanges = async (newWebsiteData, website) => {
+  const webContent = website.webContent;
+  const newWebContent = await newWebsiteData.newWebContent;
+  console.log("webContent", newWebsiteData.url);
+  console.log("newWebContent", website.url);
 
-    try {
-      if (webContent !== newWebContent) {
-        emitter.emit("send-sms", newWebsiteData.url);
-        //emitter.emit("send-email", newWebsiteData.url);
+  try {
+    if (webContent !== newWebContent) {
+      emitter.emit("send-sms", newWebsiteData.url);
+      //emitter.emit("send-email", newWebsiteData.url);
 
-        return { webContent, newWebContent };
-      } else if (!webContent) {
-        console.log("New Url!");
-        //addUrl
-        return !newWebContent;
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.error(`Error in checkPageChanges ${error.message}`);
+      return { webContent, newWebContent };
+    } else if (!webContent) {
+      console.log("New Url!");
+      //addUrl
+      return !newWebContent;
+    } else {
+      return false;
     }
+  } catch (error) {
+    console.error(`Error in checkPageChanges ${error.message}`);
   }
 };
 
