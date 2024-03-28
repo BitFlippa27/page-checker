@@ -4,13 +4,15 @@ import { filterReachableWebsites } from "../utils/utilsExports.js";
 import { iterateWebsites } from "../services/servicesExport.js";
 /**
  * Starts monitoring the provided websites.
- * @param {Object[]} websites - The websites to monitor.
+ * The cron job is scheduled to run every 10 seconds.
+ * @param {Object[]} websites - The websites from the database to monitor.
  */
 
 const startMonitoring = (websites) => {
   console.log("Starting monitoring...");
+
   cron.schedule("*/10 * * * * *", async () => {
-    let responseObjects;
+    let validResponses;
     let reachableWebsites;
     try {
       // Collecting only good responses
@@ -24,13 +26,13 @@ const startMonitoring = (websites) => {
         reachableWebsites = filterReachableWebsites(websites, validResponses);
         iterateWebsites(reachableWebsites, websites);
       } catch (error) {
-        console.error(`Error when in main iteration ${error.message}`);
+        console.error(`Error in iterateWebsite with reachableWebsites ${error.message}`);
       }
     } else {
       try {
         iterateWebsites(validResponses, websites);
       } catch (error) {
-        console.error(`Error in main loop ${error.message}`);
+        console.error(`Error in iterateWebsite with validResponses ${error.message}`);
       }
     }
   });

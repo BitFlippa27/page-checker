@@ -22,13 +22,14 @@ const saveWebsiteData = async (newWebsiteData) => {
         webContent: newWebContent,
         changeDate: changeDate || Date.now(),
       },
-      { new: true, upsert: true } // options
+      { new: true, upsert: true }
     );
   } catch (error) {
     console.error(`Error in saveWebsiteData: ${error.message}`);
   }
 };
 
+//toDo: check if website already exists
 const addUrl = async (url) => {
   try {
     await WebsiteData.create({

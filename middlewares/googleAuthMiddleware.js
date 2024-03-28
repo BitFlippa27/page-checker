@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+//sry for this mess, havent found a better way to use the google credentials
 import serviceAccount from "../coherent-window-405214-47c7aa588fc3.json" assert { type: "json" };
 
 const createJwtClient = () => {

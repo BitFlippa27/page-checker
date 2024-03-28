@@ -80,7 +80,7 @@ const iterateWebsites = async (responseObjects, websites) => {
  */
 const createMonitoringInfos = async (newWebSiteData) => { 
   let newWebContent;
-  //Dont know why yet, once its a Response Object and once not when a bad url is passed in getWebsiteResponses
+  //Dont know why yet one time its a Response Object and the other time not, when a bad url is passed in getWebsiteResponses
   if (newWebSiteData instanceof Response) {
     newWebContent = await newWebSiteData.text();
   }
@@ -115,21 +115,19 @@ const createMonitoringInfos = async (newWebSiteData) => {
 const checkContentChanges = async (newWebsiteData, website) => {
   const webContent = website.webContent;
   const newWebContent = await newWebsiteData.newWebContent;
-  console.log("webContent", newWebsiteData.url);
-  console.log("newWebContent", website.url);
 
+  console.log(`Checking ${website.url}`);
   try {
     if (webContent !== newWebContent) {
       emitter.emit("send-sms", newWebsiteData.url);
       //emitter.emit("send-email", newWebsiteData.url);
 
       return { webContent, newWebContent };
-    } else if (!webContent) {
+    } else if (newWebsiteData.loadingTime === 0) {
       console.log("New Url!");
-      //addUrl
       return !newWebContent;
     } else {
-      return false;
+      return !newWebContent;
     }
   } catch (error) {
     console.error(`Error in checkPageChanges ${error.message}`);
@@ -150,7 +148,6 @@ const getContentChanges = (oldWebContent, newWebContent) => {
     let finalChangesSheets = "";
 
     changes.forEach((part) => {
-      // green for additions, red for deletions
       let text = part.added
         ? colors.green(part.value)
         : part.removed
