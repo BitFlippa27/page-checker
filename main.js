@@ -6,5 +6,3 @@ const main = async () => {
 
 export default main;
 
-
-//register service

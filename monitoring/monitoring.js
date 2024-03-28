@@ -5,11 +5,11 @@ import { iterateWebsites } from "../services/servicesExport.js";
 import { getAllWebsites } from "../repositories/repositoriesExport.js";
 
 /**
- * Starts monitoring the provided websites.
- * The cron job is scheduled to run every 10 seconds.
- * @param {Object[]} websites - The websites from the database to monitor.
+ * @function startMonitoring
+ * @description Starts the monitoring process. It fetches the websites from the MongoDB database and starts a cron job.
+ * The cron job is scheduled to run every 10 seconds. For each website, it fetches the current content,
+ * compares it with the previously stored content from the database, and detects any changes.
  */
-
 const startMonitoring = () => {
   console.log("Starting monitoring...");
 
