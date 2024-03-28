@@ -2,16 +2,25 @@ import cron from "node-cron";
 import { getWebsiteResponses } from "../services/servicesExport.js";
 import { filterReachableWebsites } from "../utils/utilsExports.js";
 import { iterateWebsites } from "../services/servicesExport.js";
+import { getAllWebsites } from "../repositories/repositoriesExport.js";
+
 /**
  * Starts monitoring the provided websites.
  * The cron job is scheduled to run every 10 seconds.
  * @param {Object[]} websites - The websites from the database to monitor.
  */
 
-const startMonitoring = (websites) => {
+const startMonitoring = () => {
   console.log("Starting monitoring...");
 
   cron.schedule("*/10 * * * * *", async () => {
+    let websites;
+    try {
+      websites = await getAllWebsites();
+    } catch (error) {
+      console.error(`Èrror in getAllWebsites from DB ${error.message}`)
+    } 
+
     let validResponses;
     let reachableWebsites;
     try {

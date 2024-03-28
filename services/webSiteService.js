@@ -56,15 +56,17 @@ const iterateWebsites = async (responseObjects, websites) => {
     if (!website) continue;
 
     const newWebsiteData = await createMonitoringInfos(responseObject);
-    const { webContent, newWebContent } = await checkContentChanges(
-      newWebsiteData,
-      website
-    );
-    if (newWebContent) {
+    
+    if (await checkContentChanges(newWebsiteData, website)) {
+      const { webContent, newWebContent } = await checkContentChanges(
+        newWebsiteData,
+        website
+      );
       const { finalChangesSheets, finalChangesCmd } = getContentChanges(webContent,newWebContent);
       writeToGoogleSheet(finalChangesSheets);
       printAllData(newWebsiteData, finalChangesCmd);
       await saveWebsiteData(newWebsiteData);
+
     } else {
       continue;
     }
@@ -169,7 +171,7 @@ const getContentChanges = (oldWebContent, newWebContent) => {
   }
 };
 
-const printAllData = (websiteData, contentChanges) => {
+const printAllData = async (websiteData, contentChanges) => {
   const { url, httpStatus, loadingTime, changeDate } = websiteData;
 
   console.log(contentChanges);
