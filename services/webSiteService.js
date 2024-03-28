@@ -26,7 +26,7 @@ const getWebsiteResponses = async (websites) => {
       response = await fetch(url);
       endTime = Date.now();
     } catch (error) {
-      console.error(`Could not fetch ${url} ${error.message}`);
+      console.error(`Error in getWebsiteResponses: Could not fetch ${url} ${error.message}`);
       continue;
     }
     if (response?.ok) {
@@ -34,7 +34,7 @@ const getWebsiteResponses = async (websites) => {
       responseClone.loadingTime = endTime - startTime;
       validResponses.push(responseClone);
     } else {
-      console.error(`HTTP Response Code: ${response?.status}`);
+      console.error(`Error in getWebsiteResponses: HTTP Response Code: ${response?.status}`);
       continue;
     }
   }
