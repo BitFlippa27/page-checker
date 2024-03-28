@@ -19,6 +19,7 @@ const getWebsiteResponses = async (websites) => {
       endTime = Date.now();
     } catch (error) {
       console.error(`Could not fetch ${url} ${error.message}`);
+      continue;
     }
     if (response?.ok) {
       const responseClone = response.clone();
@@ -55,9 +56,16 @@ const iterateWebsites = async (responseObjects, websites) => {
   }
 };
 
-const createMonitoringInfos = async (newWebSiteData) => {
-  const newWebContent = await newWebSiteData.text();
-
+const createMonitoringInfos = async (newWebSiteData) => { 
+  let newWebContent;
+  //Dont know why yet, once its a Response Object and once not when a bad url is passed in getWebsiteResponses
+  if (newWebSiteData instanceof Response) {
+    newWebContent = await newWebSiteData.text();
+  }
+  else {
+    newWebContent = await newWebSiteData.webContent;
+  }
+  
   try {
     const monitoringInfos = {
       url: await newWebSiteData.url,
@@ -115,7 +123,6 @@ const getContentChanges = (oldWebContent, newWebContent) => {
     });
 
     changes.forEach((part) => {
-      // green for additions, red for deletions
       let text = part.value;
 
       finalChangesSheets = finalChangesSheets.concat(text);
