@@ -26,7 +26,7 @@ const getWebsiteResponses = async (websites) => {
       response = await fetch(url);
       endTime = Date.now();
     } catch (error) {
-      console.error(`Error in getWebsiteResponses: Could not fetch ${url} ${error.message}`);
+      console.error(`Could not fetch ${url} ${error.message}`);
       continue;
     }
     if (response?.ok) {

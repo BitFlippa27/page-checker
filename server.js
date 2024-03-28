@@ -1,7 +1,7 @@
 import http from "node:http";
 import main from "./main.js";
-import { config } from "./env/envExport.js"
-import { connectMongoDB } from "./connections/connectionsExport.js"
+import { config } from "./env/envExport.js";
+import { connectMongoDB } from "./connections/connectionsExport.js";
 //import { addUrl } from "./repositories/repositoriesExport.js";
 
 /*
@@ -25,7 +25,7 @@ const startServer = async () => {
       res.end("Server is running...");
     });
     server.listen(PORT_NUMBER, () => {
-      console.log(`Server is running on port ${PORT_NUMBER}`); 
+      console.log(`Server is running on port ${PORT_NUMBER}`);
     });
     server.on("error", (error) => {
       console.error(`Error: ${error.message}`);

@@ -1,5 +1,5 @@
 import { createJwtClient } from "../../middlewares/middlewaresExport.js";
-//havent figured out how to display the right format
+//havent figured out yet how to display the right format
 const writeToGoogleSheet = (newContent) => {
   console.log("Writing to Google Sheets");
   const sheets = createJwtClient();

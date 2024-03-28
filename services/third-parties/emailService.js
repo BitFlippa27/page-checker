@@ -1,6 +1,5 @@
-
-//couldnt sign up for twilio as the website didnt let me fill out my last name
-//in the form field when registering, a frontend bug from their side
+//couldnt sign up for twilio as the website didnt let me fill out my last name 
+//in the form fields when registering, a frontend bug from their side
 
 import mailgun from 'mailgun-js';
 import { config } from "../../env/envExport.js"
