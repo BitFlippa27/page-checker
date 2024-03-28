@@ -1,13 +1,19 @@
-import mailgun from 'mailgun-js';
 
-const mailgunApiKey = "7b7059975701aab63ceff3cb060db430-f68a26c9-a8142093";
-const mailgunDomain = "sandbox2cfa88ffcf3840dd92eadfe18f276be7.mailgun.org"
+//couldnt sign up for twilio as the website didnt let me fill out my last name
+//in the form field when registering, a frontend bug from their side
+
+import mailgun from 'mailgun-js';
+import { config } from "../../env/envExport.js"
+config();
+
+const mailgunApiKey = process.env.MAILGUN_API_KEY;
+const mailgunDomain = process.env.MAILGUN_DOMAIN;
 
 const mg = mailgun({ apiKey: mailgunApiKey, domain: mailgunDomain });
 
 const sendEmail = async (url) => {
   const data = {
-    from: 'toDo',
+    from: 'i have modify my DNS records for the domain',
     to: 'dennis.erdelean@proton.me',
     subject: 'Website content changed',
     text: 'The content has changed on ' + url

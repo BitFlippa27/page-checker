@@ -1,2 +1,0 @@
-vI11Lcmr6AHSPQ7q
-mongodb+srv://bitflippa:<password>@cluster0.i5cwt1d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

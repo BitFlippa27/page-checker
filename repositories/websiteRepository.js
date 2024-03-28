@@ -1,7 +1,6 @@
 import { WebsiteData } from "../models/modelsExport.js";
 
 const getAllWebsites = async () => {
-  // to repo
   try {
     const urls = await WebsiteData.find({});
     return urls;
@@ -15,7 +14,7 @@ const saveWebsiteData = async (newWebsiteData) => {
 
   try {
     await WebsiteData.findOneAndUpdate(
-      { url }, // find a document with `url`
+      { url },
       {
         httpStatus: httpStatus,
         loadingTime: loadingTime,
@@ -29,13 +28,13 @@ const saveWebsiteData = async (newWebsiteData) => {
   }
 };
 
-const addUrl = async () => {
+const addUrl = async (url) => {
   try {
     await WebsiteData.create(
     { 
-      url: "https://bingo-game-phi.vercel.app/",
-      httpStatus: 200,
-      loadingTime: 8,
+      url: url,
+      httpStatus: 0,
+      loadingTime: 0,
       webContent: "test",
       changeDate: Date.now() || Date.now(),
     }
