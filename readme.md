@@ -3,6 +3,7 @@
 ### Used Techologies
 + JavaScript
 + Node.js
++ MongoDB (mongoose)
 + cron
 + diff
 + twilio (SMS)
