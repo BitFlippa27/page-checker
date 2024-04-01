@@ -1,13 +1,18 @@
 import { google } from "googleapis";
-//sry for this mess, havent found a better way to use the google credentials (to include it in the .env file)
-import serviceAccount from "../coherent-window-405214-47c7aa588fc3.json" assert { type: "json" };
+import { config } from "../env/envExport.js";
+config();
+
+const { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY} = process.env;
+
+const pk_key = GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+
 
 const createJwtClient = () => {
   try {
     const jwtClient = new google.auth.JWT(
-      serviceAccount.client_email,
+      GOOGLE_CLIENT_EMAIL,
       null,
-      serviceAccount.private_key,
+      pk_key,
       ["https://www.googleapis.com/auth/spreadsheets"]
     );
     jwtClient.authorize((err, tokens) => {
