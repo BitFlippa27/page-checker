@@ -2,17 +2,18 @@ import { google } from "googleapis";
 import { config } from "../env/envExport.js";
 config();
 
-const { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY} = process.env;
+const { GOOGLE_CLIENT_EMAIL} = process.env;
 
-const pk_key = GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+const client_email = GOOGLE_CLIENT_EMAIL;
+const pk = GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
 
 const createJwtClient = () => {
   try {
     const jwtClient = new google.auth.JWT(
-      GOOGLE_CLIENT_EMAIL,
+      client_email,
       null,
-      pk_key,
+      pk,
       ["https://www.googleapis.com/auth/spreadsheets"]
     );
     jwtClient.authorize((err, tokens) => {
