@@ -14,4 +14,4 @@ contentChanged.on("send-email", (payload) => {
   sendEmail(payload);
 });
 
-export { emitter };
+export { contentChanged };
