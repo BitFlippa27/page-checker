@@ -1,1 +1,1 @@
-export { emitter } from "./event.js";
+export { contentChanged } from "./event.js";

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node /server/server.js",
-    "main": "nodemon server.js",
+    "main": "nodemon index.js",
     "test": "jest"
   },
   "author": "Dennis Erdelean",

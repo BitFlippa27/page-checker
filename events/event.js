@@ -4,14 +4,14 @@ import { sendEmail } from "../services/third-parties/emailService.js";
 
 const contentChanged = new EventEmitter();
 
-contentChanged.on("send-sms", (payload) => {
-  console.log(`send-sms Event fired, Website: ${payload} has changed!`);
-  sendSMS(payload);
+contentChanged.on("send-sms", (url) => {
+  console.log(`send-sms Event fired, Website: ${url} has changed!`);
+  sendSMS(url);
 });
 
-contentChanged.on("send-email", (payload) => {
-  console.log(`send-email Event fired Website: ${payload} has changed!`);
-  sendEmail(payload);
+contentChanged.on("send-email", (url) => {
+  console.log(`send-email Event fired Website: ${url} has changed!`);
+  sendEmail(url);
 });
 
 export { contentChanged };
