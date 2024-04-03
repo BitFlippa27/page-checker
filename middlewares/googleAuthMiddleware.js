@@ -2,7 +2,7 @@ import { google } from "googleapis";
 import { config } from "../env/envExport.js";
 config();
 
-const { GOOGLE_CLIENT_EMAIL} = process.env;
+const { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY} = process.env;
 
 const client_email = GOOGLE_CLIENT_EMAIL;
 const pk = GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');

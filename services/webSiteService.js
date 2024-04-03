@@ -1,6 +1,6 @@
 import * as Diff from "diff";
 import colors from "colors";
-import { emitter } from "../events/eventsExport.js";
+import { contentChanged } from "../events/eventsExport.js";
 import { saveWebsiteData } from "../repositories/repositoriesExport.js";
 import { writeToGoogleSheet } from "../services/third-parties/thirdPartiesExport.js";
 
@@ -115,8 +115,8 @@ const checkContentChanges = async (newWebsiteData, website) => {
   console.log(`Checking ${website.url}`);
   try {
     if (webContent !== newWebContent) {
-      emitter.emit("send-sms", newWebsiteData.url);
-      //emitter.emit("send-email", newWebsiteData.url);
+      contentChanged.emit("send-sms", newWebsiteData.url);
+      //contentChanged.emit("send-email", newWebsiteData.url);
 
       return { webContent, newWebContent };
     } else if (newWebsiteData.loadingTime === 0) {

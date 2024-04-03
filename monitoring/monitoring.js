@@ -18,7 +18,7 @@ const startMonitoring = () => {
     try {
       websites = await getAllWebsites();
     } catch (error) {
-      console.error(`Èrror in getAllWebsites from DB ${error.message}`)
+      console.error(`Error in getAllWebsites from DB ${error.message}`)
     } 
 
     let validResponses;
